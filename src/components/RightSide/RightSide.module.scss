@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 32px;
+}
+
+.form {
+  width: 100%;
+
+  .basicInfo {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    width: 100%;
+
+    .error {
+      color: red;
+      margin-left: 16px;
+    }
+
+    .horizontalLine {
+      width: 100%;
+      height: 1px;
+      background-color: #e0e0e0;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .tableWrapper {
+      width: 95%;
+      overflow-x: scroll;
+
+      .table {
+        width: 100%;
+      }
+    }
+  }
+
+  .submit {
+    width: 120px;
+    height: 40px;
+    margin-top: 20px;
+  }
+}
