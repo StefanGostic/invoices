@@ -93,7 +93,36 @@ const RightSide = ({ className }: RightSideProps) => {
 };
 
 const MatTable = () => {
-  const { chosenMaterials, setChosenMaterials } = useMaterialStore();
+  const { materials, setMaterials, chosenMaterials, setChosenMaterials } =
+    useMaterialStore();
+
+  const onChangeQuantity = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string
+  ) => {
+    console.log(Number(e.target.value));
+    const originMaterial = materials.find((material) => material.id === id);
+    if (!originMaterial) {
+      return;
+    }
+    if (originMaterial["invoice_line/quantity"] < Number(e.target.value)) {
+      alert("Nemate dovoljno materijala na stanju");
+      return;
+    }
+
+    const newMaterials = [...chosenMaterials];
+    const material = newMaterials.find((material) => material.id === id);
+    if (material) {
+      material["invoice_line/quantity"] = Number(e.target.value);
+      setChosenMaterials(newMaterials);
+    }
+
+    // const newMaterials = [...chosenMaterials];
+    // newMaterials[index]["invoice_line/quantity"] = Number(
+    //   e.target.value
+    // );
+    // setChosenMaterials(newMaterials);
+  };
 
   return (
     <table className={styles.table}>
@@ -119,13 +148,7 @@ const MatTable = () => {
               <input
                 type="number"
                 value={material?.["invoice_line/quantity"]}
-                onChange={(e) => {
-                  const newMaterials = [...chosenMaterials];
-                  newMaterials[index]["invoice_line/quantity"] = Number(
-                    e.target.value
-                  );
-                  setChosenMaterials(newMaterials);
-                }}
+                onChange={(e) => onChangeQuantity(e, material.id)}
                 style={{ width: "100%" }}
               />
             </td>
@@ -157,7 +180,6 @@ const OtherTable = () => {
   }, [chosenMaterials]);
 
   const vpc = chosenMaterials.reduce((acc, material) => {
-    console.log(material);
     return (
       acc +
       Number(
@@ -184,7 +206,7 @@ const OtherTable = () => {
         </tr>
         <tr>
           <td>Troškovi materijala i obrade</td>
-          <td>{vpc}</td>
+          <td>{vpc.toFixed(2)}</td>
         </tr>
         <tr>
           <td>Troškovi radnika</td>

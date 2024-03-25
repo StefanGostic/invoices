@@ -11,10 +11,9 @@ type LeftSideProps = {
 };
 
 const LeftSide = ({ className }: LeftSideProps) => {
-  const { setMaterials, materials } = useMaterialStore();
+  const { setMaterials, filterMaterialsByName } = useMaterialStore();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files);
     if (e?.target?.files && e.target.files.length > 0) {
       Papa.parse(e.target.files[0], {
         header: true,
@@ -34,7 +33,6 @@ const LeftSide = ({ className }: LeftSideProps) => {
               };
             }
           );
-          console.log("STA BILO", newMaterials);
           setMaterials(newMaterials);
         },
       });
@@ -44,13 +42,17 @@ const LeftSide = ({ className }: LeftSideProps) => {
   return (
     <div className={classNames(styles.container, className)}>
       <div className={styles.header}>
-        <button className={styles.button}>Add</button>
         <input
           type="file"
           accept=".csv,.xlsx,.xls"
           onChange={handleFileUpload}
         />
-        <input className={styles.input} type="text" placeholder="Search" />
+        <input
+          className={styles.input}
+          type="text"
+          placeholder="Search"
+          onChange={(e) => filterMaterialsByName(e.target.value)}
+        />
       </div>
       <MaterialsTable></MaterialsTable>
     </div>

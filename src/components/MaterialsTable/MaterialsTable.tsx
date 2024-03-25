@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./MaterialsTable.module.scss";
 import { Material } from "@/utils/types";
 import {
@@ -8,6 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMaterialStore } from "@/stores/useMaterialStore";
+import classNames from "classnames";
 
 type MaterialsTableProps = {
   add?: () => void;
@@ -16,8 +17,8 @@ type MaterialsTableProps = {
 const MaterialsTable = ({
   add = () => console.log("haha"),
 }: MaterialsTableProps) => {
-  const [data, setData] = React.useState<Material[]>([]);
-  const { materials, setMaterials, addChosenMaterial } = useMaterialStore();
+  const { materials, filteredMaterials, addChosenMaterial } =
+    useMaterialStore();
 
   const columnHelper = createColumnHelper<Material>();
 
@@ -57,7 +58,7 @@ const MaterialsTable = ({
 
   const table = useReactTable({
     columns,
-    data: materials,
+    data: filteredMaterials.length > 0 ? filteredMaterials : materials,
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -65,6 +66,7 @@ const MaterialsTable = ({
 
   const addMaterialToInvoice = (id: string, row: any) => {
     addChosenMaterial(id);
+
     // rerender();
   };
 
@@ -94,15 +96,28 @@ const MaterialsTable = ({
               onDoubleClick={() =>
                 addMaterialToInvoice(
                   (
-                    (row
+                    row
                       ?.getVisibleCells()
                       ?.at(0)
                       ?.getContext()
-                      ?.getValue() as number) - 1
+                      ?.getValue() as number
                   ).toString() || "",
                   row
                 )
               }
+              className={classNames({
+                [styles.selected]: materials.find(
+                  (material) =>
+                    material.id.toString() ===
+                      (
+                        row
+                          ?.getVisibleCells()
+                          ?.at(0)
+                          ?.getContext()
+                          ?.getValue() as number
+                      ).toString() || ""
+                )?.selected,
+              })}
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id}>
