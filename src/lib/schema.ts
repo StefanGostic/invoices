@@ -6,7 +6,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-export const ExampleTable = pgTable(
+export const users = pgTable(
   "users",
 
   {
