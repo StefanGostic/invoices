@@ -1,3 +1,5 @@
+"use client";
+
 import classNames from "classnames";
 import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -22,18 +24,23 @@ const RightSide = ({ className }: RightSideProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
+    reset,
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = (data) => setIsSubmitted(true);
   const refForPrinting = React.useRef<HTMLDivElement>(null);
+  const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false);
+
+  useEffect(() => {
+    if (isSubmitted && !isValid) {
+      setIsSubmitted(false);
+    }
+  }, [isValid, isSubmitted]);
 
   return (
-    <div
-      className={classNames(styles.container, className)}
-      ref={refForPrinting}
-    >
+    <div className={classNames(styles.container, className)}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        <div className={styles.basicInfo}>
+        <div className={styles.basicInfo} ref={refForPrinting}>
           <div className={styles.label}>Naziv:</div>
           <input
             placeholder="Naziv"
@@ -74,25 +81,38 @@ const RightSide = ({ className }: RightSideProps) => {
           )}
           <div className={styles.horizontalLine}></div>
           <div className={styles.tableWrapper}>
-            <MatTable />
+            <MatTable isSubmitted={isSubmitted} />
           </div>
           <div className={styles.horizontalLine}></div>
           <div className={styles.tableWrapper}>
-            <OtherTable />
+            <OtherTable isSubmitted={isSubmitted} />
           </div>
-
-          <ReactToPrint
-            bodyClass="print-agreement"
-            content={() => refForPrinting.current}
-            trigger={() => <input type="submit" className={styles.submit} />}
-          />
         </div>
+        <input
+          type="submit"
+          className={styles.submit}
+          value="Faktura spremna"
+        />
+
+        <button className={styles.submit} onClick={() => reset()}>
+          Reset forme
+        </button>
+
+        <ReactToPrint
+          bodyClass="print-agreement"
+          content={() => refForPrinting.current}
+          trigger={() => (
+            <button className={styles.submit} disabled={!isSubmitted}>
+              Printanje
+            </button>
+          )}
+        />
       </form>
     </div>
   );
 };
 
-const MatTable = () => {
+const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
   const { materials, setMaterials, chosenMaterials, setChosenMaterials } =
     useMaterialStore();
 
@@ -100,7 +120,6 @@ const MatTable = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     id: string
   ) => {
-    console.log(Number(e.target.value));
     const originMaterial = materials.find((material) => material.id === id);
     if (!originMaterial) {
       return;
@@ -116,12 +135,6 @@ const MatTable = () => {
       material["invoice_line/quantity"] = Number(e.target.value);
       setChosenMaterials(newMaterials);
     }
-
-    // const newMaterials = [...chosenMaterials];
-    // newMaterials[index]["invoice_line/quantity"] = Number(
-    //   e.target.value
-    // );
-    // setChosenMaterials(newMaterials);
   };
 
   return (
@@ -145,12 +158,16 @@ const MatTable = () => {
             <td>{material?.["invoice_line/origin"]}</td>
             <td>{material?.["invoice_line/name"]}</td>
             <td>
-              <input
-                type="number"
-                value={material?.["invoice_line/quantity"]}
-                onChange={(e) => onChangeQuantity(e, material.id)}
-                style={{ width: "100%" }}
-              />
+              {isSubmitted ? (
+                material?.["invoice_line/quantity"]
+              ) : (
+                <input
+                  type="number"
+                  value={material?.["invoice_line/quantity"]}
+                  onChange={(e) => onChangeQuantity(e, material.id)}
+                  style={{ width: "100%" }}
+                />
+              )}
             </td>
             <td>{material?.["invoice_line/uos_id/name"]}</td>
             <td>{material?.["invoice_line/price_unit"]}</td>
@@ -169,15 +186,11 @@ const MatTable = () => {
   );
 };
 
-const OtherTable = () => {
+const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
   const { chosenMaterials } = useMaterialStore();
   const [workerCost, setWorkerCost] = React.useState<number>(0);
   const [repromaterialCost, setRepromaterialCost] = React.useState<number>(0);
   const [margin, setMargin] = React.useState<number>(0);
-
-  useEffect(() => {
-    console.log(chosenMaterials, "chosen");
-  }, [chosenMaterials]);
 
   const vpc = chosenMaterials.reduce((acc, material) => {
     return (
@@ -193,7 +206,7 @@ const OtherTable = () => {
   }, 0);
 
   return (
-    <table className={styles.table}>
+    <table className={styles.table} style={{ marginTop: "16px" }}>
       <thead>
         <tr>
           <th>Obračun cijene</th>
@@ -211,41 +224,52 @@ const OtherTable = () => {
         <tr>
           <td>Troškovi radnika</td>
           <td>
-            <input
-              type="number"
-              step={0.1}
-              value={workerCost || ""}
-              placeholder="0"
-              onChange={(e) => setWorkerCost(Number(e.target.value))}
-              style={{ width: "100px" }}
-            />
+            {isSubmitted ? (
+              workerCost
+            ) : (
+              <input
+                type="number"
+                step={0.1}
+                value={workerCost || ""}
+                placeholder="0"
+                onChange={(e) => setWorkerCost(Number(e.target.value))}
+                style={{ width: "100px" }}
+              />
+            )}
           </td>
         </tr>
         <tr>
           <td>Repromaterijal i ostali troškovi</td>
           <td>
-            {" "}
-            <input
-              type="number"
-              step={0.1}
-              value={repromaterialCost || ""}
-              placeholder="0"
-              onChange={(e) => setRepromaterialCost(Number(e.target.value))}
-              style={{ width: "100px" }}
-            />
+            {isSubmitted ? (
+              repromaterialCost
+            ) : (
+              <input
+                type="number"
+                step={0.1}
+                value={repromaterialCost || ""}
+                placeholder="0"
+                onChange={(e) => setRepromaterialCost(Number(e.target.value))}
+                style={{ width: "100px" }}
+              />
+            )}
           </td>
         </tr>
         <tr>
           <td>Marža</td>
           <td>
-            <input
-              type="number"
-              step={0.1}
-              value={margin || ""}
-              placeholder="0"
-              onChange={(e) => setMargin(Number(e.target.value))}
-              style={{ width: "100px" }}
-            />
+            {isSubmitted ? (
+              margin
+            ) : (
+              <input
+                type="number"
+                step={0.1}
+                value={margin || ""}
+                placeholder="0"
+                onChange={(e) => setMargin(Number(e.target.value))}
+                style={{ width: "100px" }}
+              />
+            )}
           </td>
         </tr>
         <tr>

@@ -87,17 +87,3 @@ export const materialsToInvoices = pgTable(
     pk: primaryKey(t.materialsId, t.invoicesId),
   })
 );
-
-export const materialsToInvoicesRelations = relations(
-  materialsToInvoices,
-  ({ one }) => ({
-    material: one(materials, {
-      fields: [materialsToInvoices.materialsId],
-      references: [materials.id],
-    }),
-    invoice: one(invoices, {
-      fields: [materialsToInvoices.invoicesId],
-      references: [invoices.id],
-    }),
-  })
-);

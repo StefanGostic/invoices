@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect } from "react";
 import styles from "./LeftSide.module.scss";
 import MaterialsTable from "../MaterialsTable/MaterialsTable";
@@ -5,13 +7,19 @@ import classNames from "classnames";
 import Papa from "papaparse";
 import { useMaterialStore } from "@/stores/useMaterialStore";
 import { Material } from "@/utils/types";
+import { postMaterials } from "@/app/axios/materialsApi";
 
 type LeftSideProps = {
+  materials: Material[];
   className?: string;
 };
 
-const LeftSide = ({ className }: LeftSideProps) => {
+const LeftSide = ({ materials, className }: LeftSideProps) => {
   const { setMaterials, filterMaterialsByName } = useMaterialStore();
+
+  useEffect(() => {
+    setMaterials(materials);
+  }, [materials]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target?.files && e.target.files.length > 0) {
@@ -33,7 +41,8 @@ const LeftSide = ({ className }: LeftSideProps) => {
               };
             }
           );
-          setMaterials(newMaterials);
+          postMaterials(newMaterials);
+          // setMaterials(newMaterials);
         },
       });
     }

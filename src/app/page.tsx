@@ -1,17 +1,19 @@
-"use client";
-
 import styles from "./page.module.scss";
 import LeftSide from "@/components/LeftSide/LeftSide";
 import RightSide from "@/components/RightSide/RightSide";
-import { getUsers, getUsers2 } from "@/lib/db";
+
+const getMaterials = async () => {
+  const res = await fetch("http://localhost:3000/api/materials");
+  const data = await res.json();
+  return data;
+};
 
 export default async function Home() {
-  // const data2 = await getUsers2();
+  const materials = await getMaterials();
 
-  // console.log(data, data2);
   return (
     <main className={styles.main}>
-      <LeftSide className={styles.leftSide}></LeftSide>
+      <LeftSide materials={materials} className={styles.leftSide}></LeftSide>
       <RightSide className={styles.rightSide}></RightSide>
     </main>
   );
