@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/env": "^14.1.4",
     "@tanstack/react-table": "^8.13.2",
     "@vercel/postgres": "^0.7.2",
     "classnames": "^2.5.1",

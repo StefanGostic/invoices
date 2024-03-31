@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1711537422461,
-      "tag": "0000_strange_wither",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1711654079457,
-      "tag": "0001_orange_supernaut",
+      "when": 1711910486421,
+      "tag": "0000_yellow_scourge",
       "breakpoints": true
     }
   ]

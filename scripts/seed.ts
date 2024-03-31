@@ -2,9 +2,9 @@ import { NewUser, createUser } from "@/lib/db";
 
 async function main() {
   const newUser: NewUser = {
-    email: "foo@example.com",
-    image: "amazing image",
-    name: "foo",
+    email: "stef@example.com",
+    image: "stef image",
+    name: "stef",
   };
   const res = await createUser(newUser);
   console.log(res);

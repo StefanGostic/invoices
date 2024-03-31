@@ -6,6 +6,7 @@ import {
   serial,
   text,
   timestamp,
+  primaryKey,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
@@ -50,6 +51,10 @@ export const materials = pgTable(
   }
 );
 
+export const materialsRelations = relations(materials, ({ many }) => ({
+  materialsToInvoices: many(materialsToInvoices),
+}));
+
 export const invoices = pgTable("invoices", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -65,5 +70,34 @@ export const invoices = pgTable("invoices", {
 });
 
 export const invoicesRelations = relations(invoices, ({ many }) => ({
-  materials: many(materials),
+  materialsToInvoices: many(materialsToInvoices),
 }));
+
+export const materialsToInvoices = pgTable(
+  "materials_to_invoices",
+  {
+    materialsId: integer("materials_id")
+      .notNull()
+      .references(() => materials.id),
+    invoicesId: integer("invoices_id")
+      .notNull()
+      .references(() => invoices.id),
+  },
+  (t) => ({
+    pk: primaryKey(t.materialsId, t.invoicesId),
+  })
+);
+
+export const materialsToInvoicesRelations = relations(
+  materialsToInvoices,
+  ({ one }) => ({
+    material: one(materials, {
+      fields: [materialsToInvoices.materialsId],
+      references: [materials.id],
+    }),
+    invoice: one(invoices, {
+      fields: [materialsToInvoices.invoicesId],
+      references: [invoices.id],
+    }),
+  })
+);
