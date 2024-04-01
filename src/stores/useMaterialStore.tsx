@@ -87,7 +87,6 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
   },
   updateMaterialQuantity: (id: string, quantity: number) => {
     set((state: any) => {
-      console.log("HAJA", state.chosenMaterials);
       const material = state.materials.find(
         (material: Material) => material.id.toString() === id.toString()
       );

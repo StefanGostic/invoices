@@ -31,7 +31,6 @@ const RightSide = ({ className }: RightSideProps) => {
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     setIsSubmitted(true);
     chosenMaterials.forEach((chosenMaterial) => {
-      console.log(chosenMaterial, "UPDATING", chosenMaterial.id);
       updateMaterialQuantity(
         chosenMaterial.id,
         chosenMaterial["invoice_line/quantity"]

@@ -3,7 +3,9 @@ import LeftSide from "@/components/LeftSide/LeftSide";
 import RightSide from "@/components/RightSide/RightSide";
 
 const getMaterials = async () => {
-  const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/materials");
+  const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/materials", {
+    cache: "no-store",
+  });
   const data = await res.json();
   return data;
 };
