@@ -15,7 +15,11 @@ type LeftSideProps = {
 };
 
 const LeftSide = ({ materials, className }: LeftSideProps) => {
-  const { setMaterials, filterMaterialsByName } = useMaterialStore();
+  const {
+    materials: oldMaterials,
+    setMaterials,
+    filterMaterialsByName,
+  } = useMaterialStore();
 
   useEffect(() => {
     setMaterials(materials);
@@ -42,7 +46,7 @@ const LeftSide = ({ materials, className }: LeftSideProps) => {
             }
           );
           postMaterials(newMaterials);
-          // setMaterials(newMaterials);
+          setMaterials([...oldMaterials, ...newMaterials]);
         },
       });
     }

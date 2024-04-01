@@ -1,5 +1,6 @@
 import { Material } from "@/utils/types";
 import { create } from "zustand";
+import { postMaterials, putMaterialQuantity } from "@/app/axios/materialsApi";
 
 type MaterialStore = {
   materials: Material[];
@@ -11,6 +12,7 @@ type MaterialStore = {
   addChosenMaterial: (id: string) => void;
   removeChosenMaterial: (id: string) => void;
   filterMaterialsByName: (query: string) => void;
+  updateMaterialQuantity: (id: string, quantity: number) => void;
 };
 
 export const useMaterialStore = create<MaterialStore>((set) => ({
@@ -77,8 +79,31 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
     }
     set((state: any) => ({
       filteredMaterials: state.materials.filter((material: Material) =>
-        material["invoice_line/name"].includes(query)
+        material["invoice_line/name"]
+          .toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase())
       ),
     }));
+  },
+  updateMaterialQuantity: (id: string, quantity: number) => {
+    set((state: any) => {
+      console.log("HAJA", state.chosenMaterials);
+      const material = state.materials.find(
+        (material: Material) => material.id.toString() === id.toString()
+      );
+      if (!material) {
+        return state;
+      }
+
+      material["invoice_line/quantity"] -= quantity;
+      const newMaterials = state.materials.map((material: Material) =>
+        material.id.toString() === id ? { ...material } : material
+      );
+
+      putMaterialQuantity(material.id, material["invoice_line/quantity"]);
+      return {
+        materials: newMaterials,
+      };
+    });
   },
 }));

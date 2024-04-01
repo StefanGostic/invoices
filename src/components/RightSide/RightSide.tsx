@@ -27,7 +27,17 @@ const RightSide = ({ className }: RightSideProps) => {
     formState: { errors, isValid },
     reset,
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => setIsSubmitted(true);
+  const { updateMaterialQuantity, chosenMaterials } = useMaterialStore();
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setIsSubmitted(true);
+    chosenMaterials.forEach((chosenMaterial) => {
+      console.log(chosenMaterial, "UPDATING", chosenMaterial.id);
+      updateMaterialQuantity(
+        chosenMaterial.id,
+        chosenMaterial["invoice_line/quantity"]
+      );
+    });
+  };
   const refForPrinting = React.useRef<HTMLDivElement>(null);
   const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false);
 
@@ -41,44 +51,52 @@ const RightSide = ({ className }: RightSideProps) => {
     <div className={classNames(styles.container, className)}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <div className={styles.basicInfo} ref={refForPrinting}>
-          <div className={styles.label}>Naziv:</div>
-          <input
-            placeholder="Naziv"
-            {...register("naziv", { required: true })}
-            style={{ marginBottom: "10px", width: "25%" }}
-          />
-          {errors.naziv && (
-            <span className={styles.error}>Ovo polje je obavezno</span>
-          )}
-          <div className={styles.label}>Broj Komada:</div>
-          <input
-            type="number"
-            placeholder="Broj Komada"
-            {...register("brojKomada", { required: true })}
-            style={{ marginBottom: "10px", width: "25%" }}
-          />
-          {errors.brojKomada && (
-            <span className={styles.error}>Ovo polje je obavezno</span>
-          )}
-          <div className={styles.label}>Objekat:</div>
-          <input
-            placeholder="Objekat"
-            {...register("objekat", { required: true })}
-            style={{ marginBottom: "10px", width: "25%" }}
-          />
-          {errors.objekat && (
-            <span className={styles.error}>Ovo polje je obavezno</span>
-          )}
-          <div className={styles.label}>Radni Broj:</div>
-          <input
-            type="number"
-            placeholder="Radni Broj"
-            {...register("radniBroj", { required: true })}
-            style={{ marginBottom: "10px", width: "25%" }}
-          />
-          {errors.radniBroj && (
-            <span className={styles.error}>Ovo polje je obavezno</span>
-          )}
+          <div className={styles.inputWrapper}>
+            <div className={styles.label}>Naziv:</div>
+            <input
+              placeholder="Naziv"
+              {...register("naziv", { required: true })}
+              style={{ marginBottom: "10px", width: "25%" }}
+            />
+            {errors.naziv && (
+              <span className={styles.error}>Ovo polje je obavezno</span>
+            )}
+          </div>
+          <div className={styles.inputWrapper}>
+            <div className={styles.label}>Broj Komada:</div>
+            <input
+              type="number"
+              placeholder="Broj Komada"
+              {...register("brojKomada", { required: true })}
+              style={{ marginBottom: "10px", width: "25%" }}
+            />
+            {errors.brojKomada && (
+              <span className={styles.error}>Ovo polje je obavezno</span>
+            )}
+          </div>
+          <div className={styles.inputWrapper}>
+            <div className={styles.label}>Objekat:</div>
+            <input
+              placeholder="Objekat"
+              {...register("objekat", { required: true })}
+              style={{ marginBottom: "10px", width: "25%" }}
+            />
+            {errors.objekat && (
+              <span className={styles.error}>Ovo polje je obavezno</span>
+            )}
+          </div>
+          <div>
+            <div className={styles.label}>Radni Broj:</div>
+            <input
+              type="number"
+              placeholder="Radni Broj"
+              {...register("radniBroj", { required: true })}
+              style={{ marginBottom: "10px", width: "25%" }}
+            />
+            {errors.radniBroj && (
+              <span className={styles.error}>Ovo polje je obavezno</span>
+            )}
+          </div>
           <div className={styles.horizontalLine}></div>
           <div className={styles.tableWrapper}>
             <MatTable isSubmitted={isSubmitted} />
@@ -92,6 +110,7 @@ const RightSide = ({ className }: RightSideProps) => {
           type="submit"
           className={styles.submit}
           value="Faktura spremna"
+          disabled={isSubmitted}
         />
 
         <button className={styles.submit} onClick={() => reset()}>
@@ -101,6 +120,7 @@ const RightSide = ({ className }: RightSideProps) => {
         <ReactToPrint
           bodyClass="print-agreement"
           content={() => refForPrinting.current}
+          pageStyle={"padding: 40px"}
           trigger={() => (
             <button className={styles.submit} disabled={!isSubmitted}>
               Printanje
