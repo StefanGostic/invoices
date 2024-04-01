@@ -9,7 +9,7 @@ const getMaterials = async () => {
 };
 
 export default async function Home() {
-  const materials = await getMaterials();
+  const materials = (await getMaterials()) || [];
 
   return (
     <main className={styles.main}>
