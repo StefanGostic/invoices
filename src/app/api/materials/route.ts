@@ -1,6 +1,7 @@
 import {
   getAllMaterials,
   insertMaterials,
+  updateMaterial,
   updateMaterialQuantity,
 } from "@/lib/db";
 import { NextRequest } from "next/server";
@@ -26,6 +27,17 @@ export async function PUT(request: NextRequest) {
   let updatedMaterial = null;
   if (id && quantity) {
     await updateMaterialQuantity(parseInt(id || ""), parseInt(quantity || ""));
+  }
+  return Response.json({ updatedMaterial });
+}
+
+export async function PATCH(request: Request) {
+  const res = await request.json();
+  const searchParams = new URLSearchParams(request.url.split("?")[1]);
+  const id = searchParams.get("id");
+  let updatedMaterial = null;
+  if (id) {
+    updatedMaterial = await updateMaterial(parseInt(id), res);
   }
   return Response.json({ updatedMaterial });
 }

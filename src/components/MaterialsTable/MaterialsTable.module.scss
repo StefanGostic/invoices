@@ -11,6 +11,22 @@
   }
 }
 
-.selected {
-  background-color: aquamarine;
+.rowT {
+  position: relative;
+}
+
+.inputTable {
+  border: none;
+  outline: none;
+  width: 100%;
+  height: 30px;
+  text-align: right;
+  padding: 0 4px;
+}
+
+.selectedAbs {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 255, 212, 0.3);
 }

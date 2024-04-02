@@ -7,3 +7,7 @@ export const postMaterials = async (data: any) => {
 export const putMaterialQuantity = async (id: string, quantity: number) => {
   return await axios.put(`/api/materials?id=${id}&quantity=${quantity}`);
 };
+
+export const patchMaterial = async (id: string, data: any) => {
+  return await axios.patch(`/api/materials?id=${id}`, data);
+};

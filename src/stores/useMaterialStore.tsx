@@ -1,6 +1,10 @@
 import { Material } from "@/utils/types";
 import { create } from "zustand";
-import { postMaterials, putMaterialQuantity } from "@/app/axios/materialsApi";
+import {
+  patchMaterial,
+  postMaterials,
+  putMaterialQuantity,
+} from "@/app/axios/materialsApi";
 
 type MaterialStore = {
   materials: Material[];
@@ -13,6 +17,7 @@ type MaterialStore = {
   removeChosenMaterial: (id: string) => void;
   filterMaterialsByName: (query: string) => void;
   updateMaterialQuantity: (id: string, quantity: number) => void;
+  updateMaterial: (id: string, newMaterial: Material) => void;
 };
 
 export const useMaterialStore = create<MaterialStore>((set) => ({
@@ -100,6 +105,26 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
       );
 
       putMaterialQuantity(material.id, material["invoice_line/quantity"]);
+      return {
+        materials: newMaterials,
+      };
+    });
+  },
+  updateMaterial: (id: string, newMaterial: Material) => {
+    set((state: any) => {
+      const material = state.materials.find(
+        (material: Material) => material.id.toString() === id.toString()
+      );
+      if (!material) {
+        return state;
+      }
+
+      const newMaterials = state.materials.map((material: Material) =>
+        material.id.toString() === id ? { ...newMaterial } : material
+      );
+
+      // postMaterials(newMaterial);
+      patchMaterial(id, newMaterial);
       return {
         materials: newMaterials,
       };

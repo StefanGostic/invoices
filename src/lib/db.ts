@@ -27,3 +27,11 @@ export const updateMaterialQuantity = async (id: number, quantity: number) => {
     .where(eq(materials.id, id))
     .returning();
 };
+
+export const updateMaterial = async (id: number, data: any) => {
+  return await db
+    .update(materials)
+    .set(data)
+    .where(eq(materials.id, id))
+    .returning();
+};
