@@ -94,6 +94,7 @@ const MaterialsTable = ({
     () => [
       {
         id: "select",
+        size: 15,
         header: ({ table }) => (
           <IndeterminateCheckbox
             {...{
@@ -104,7 +105,7 @@ const MaterialsTable = ({
           />
         ),
         cell: ({ row }) => (
-          <div className="px-1">
+          <div className={styles.center}>
             <IndeterminateCheckbox
               {...{
                 checked: row.getIsSelected(),
@@ -126,6 +127,7 @@ const MaterialsTable = ({
             id: "id",
             header: () => <span># Nm</span>,
             footer: (props) => props.column.id,
+            size: 15,
           },
           {
             accessorFn: (row) => row["invoice_line/origin"],
@@ -138,6 +140,8 @@ const MaterialsTable = ({
             id: "invoice_line/name",
             header: () => <span>invoice_line/name</span>,
             footer: (props) => props.column.id,
+            size: 700,
+            minSize: 500,
           },
           {
             accessorFn: (row) => row["invoice_line/quantity"],
@@ -207,7 +211,12 @@ const MaterialsTable = ({
 
   return (
     <div className={styles.container}>
-      <table className={styles.table1}>
+      <table
+        className={styles.table1}
+        style={{
+          width: table.getCenterTotalSize(),
+        }}
+      >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -258,7 +267,12 @@ const MaterialsTable = ({
                     ).toString() || ""
               )?.selected && <div className={styles.selectedAbs}></div>}
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
+                <td
+                  key={cell.id}
+                  style={{
+                    width: cell.column.getSize(),
+                  }}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
