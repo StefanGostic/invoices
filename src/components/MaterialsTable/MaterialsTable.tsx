@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useEffect, useState } from "react";
+import React, { HTMLProps, useEffect, useState } from "react";
 import styles from "./MaterialsTable.module.scss";
 import { Material } from "@/utils/types";
 import {
@@ -15,6 +15,10 @@ import classNames from "classnames";
 
 type MaterialsTableProps = {
   add?: () => void;
+  rowSelection?: Record<string, boolean>;
+  setRowSelection?: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
 };
 
 declare module "@tanstack/react-table" {
@@ -50,14 +54,68 @@ const defaultColumn: Partial<ColumnDef<Material>> = {
   },
 };
 
+function IndeterminateCheckbox({
+  indeterminate,
+  className = "",
+  ...rest
+}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+  const ref = React.useRef<HTMLInputElement>(null!);
+
+  React.useEffect(() => {
+    if (typeof indeterminate === "boolean") {
+      ref.current.indeterminate = !rest.checked && indeterminate;
+    }
+  }, [ref, indeterminate]);
+
+  return (
+    <input
+      type="checkbox"
+      ref={ref}
+      className={className + " cursor-pointer"}
+      {...rest}
+    />
+  );
+}
+
 const MaterialsTable = ({
   add = () => console.log("haha"),
+  rowSelection,
+  setRowSelection,
 }: MaterialsTableProps) => {
-  const { materials, filteredMaterials, addChosenMaterial, updateMaterial } =
-    useMaterialStore();
+  const {
+    materials,
+    filteredMaterials,
+    addChosenMaterial,
+    updateMaterial,
+    deleteMaterials,
+  } = useMaterialStore();
 
   const columns = React.useMemo<ColumnDef<Material>[]>(
     () => [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <IndeterminateCheckbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomeRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler(),
+            }}
+          />
+        ),
+        cell: ({ row }) => (
+          <div className="px-1">
+            <IndeterminateCheckbox
+              {...{
+                checked: row.getIsSelected(),
+                disabled: !row.getCanSelect(),
+                indeterminate: row.getIsSomeSelected(),
+                onChange: row.getToggleSelectedHandler(),
+              }}
+            />
+          </div>
+        ),
+      },
       {
         header: "",
         id: "table",
@@ -66,7 +124,7 @@ const MaterialsTable = ({
           {
             accessorFn: (row) => row.id,
             id: "id",
-            header: () => <span>id</span>,
+            header: () => <span># Nm</span>,
             footer: (props) => props.column.id,
           },
           {
@@ -121,6 +179,10 @@ const MaterialsTable = ({
     columns,
     data: filteredMaterials.length > 0 ? filteredMaterials : materials,
     defaultColumn,
+    state: {
+      rowSelection,
+    },
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     meta: {
       updateData: (rowIndex, columnId, value) => {
@@ -175,26 +237,14 @@ const MaterialsTable = ({
                   (
                     row
                       ?.getVisibleCells()
-                      ?.at(0)
+                      ?.at(1)
                       ?.getContext()
                       ?.getValue() as number
                   ).toString() || "",
                   row
                 )
               }
-              className={classNames(styles.rowT, {
-                [styles.selected]: materials.find(
-                  (material) =>
-                    material.id.toString() ===
-                      (
-                        row
-                          ?.getVisibleCells()
-                          ?.at(0)
-                          ?.getContext()
-                          ?.getValue() as number
-                      ).toString() || ""
-                )?.selected,
-              })}
+              className={classNames(styles.rowT)}
             >
               {materials.find(
                 (material) =>
@@ -202,7 +252,7 @@ const MaterialsTable = ({
                     (
                       row
                         ?.getVisibleCells()
-                        ?.at(0)
+                        ?.at(1)
                         ?.getContext()
                         ?.getValue() as number
                     ).toString() || ""

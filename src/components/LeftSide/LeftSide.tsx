@@ -15,10 +15,13 @@ type LeftSideProps = {
 };
 
 const LeftSide = ({ materials, className }: LeftSideProps) => {
+  const [rowSelection, setRowSelection] = React.useState({});
+
   const {
     materials: oldMaterials,
     setMaterials,
     filterMaterialsByName,
+    deleteMaterials,
   } = useMaterialStore();
 
   useEffect(() => {
@@ -52,6 +55,15 @@ const LeftSide = ({ materials, className }: LeftSideProps) => {
     }
   };
 
+  const handleDelete = () => {
+    const materialsToDelete = Object.keys(rowSelection).map((id) => {
+      return oldMaterials.at(parseInt(id));
+    });
+    const ids = materialsToDelete.map((m) => parseInt(m?.id || ""));
+    deleteMaterials(ids);
+    setRowSelection({});
+  };
+
   return (
     <div className={classNames(styles.container, className)}>
       <div className={styles.header}>
@@ -60,6 +72,9 @@ const LeftSide = ({ materials, className }: LeftSideProps) => {
           accept=".csv,.xlsx,.xls"
           onChange={handleFileUpload}
         />
+
+        <button onClick={handleDelete}>Izbrisi materijale</button>
+
         <input
           className={styles.input}
           type="text"
@@ -67,7 +82,10 @@ const LeftSide = ({ materials, className }: LeftSideProps) => {
           onChange={(e) => filterMaterialsByName(e.target.value)}
         />
       </div>
-      <MaterialsTable></MaterialsTable>
+      <MaterialsTable
+        rowSelection={rowSelection}
+        setRowSelection={setRowSelection}
+      ></MaterialsTable>
     </div>
   );
 };

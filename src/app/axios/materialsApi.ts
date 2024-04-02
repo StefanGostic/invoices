@@ -11,3 +11,7 @@ export const putMaterialQuantity = async (id: string, quantity: number) => {
 export const patchMaterial = async (id: string, data: any) => {
   return await axios.patch(`/api/materials?id=${id}`, data);
 };
+
+export const deleteMaterials = async (ids: number[]) => {
+  return await axios.delete("/api/materials", { data: ids });
+};

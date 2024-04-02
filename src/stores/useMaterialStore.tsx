@@ -4,6 +4,7 @@ import {
   patchMaterial,
   postMaterials,
   putMaterialQuantity,
+  deleteMaterials,
 } from "@/app/axios/materialsApi";
 
 type MaterialStore = {
@@ -18,6 +19,7 @@ type MaterialStore = {
   filterMaterialsByName: (query: string) => void;
   updateMaterialQuantity: (id: string, quantity: number) => void;
   updateMaterial: (id: string, newMaterial: Material) => void;
+  deleteMaterials: (ids: number[]) => void;
 };
 
 export const useMaterialStore = create<MaterialStore>((set) => ({
@@ -123,8 +125,19 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
         material.id.toString() === id ? { ...newMaterial } : material
       );
 
-      // postMaterials(newMaterial);
       patchMaterial(id, newMaterial);
+      return {
+        materials: newMaterials,
+      };
+    });
+  },
+  deleteMaterials: (ids: number[]) => {
+    set((state: any) => {
+      const newMaterials = state.materials.filter(
+        (material: Material) => !ids.includes(parseInt(material.id))
+      );
+
+      deleteMaterials(ids);
       return {
         materials: newMaterials,
       };

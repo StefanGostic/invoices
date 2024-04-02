@@ -1,4 +1,5 @@
 import {
+  deleteMaterials,
   getAllMaterials,
   insertMaterials,
   updateMaterial,
@@ -40,4 +41,10 @@ export async function PATCH(request: Request) {
     updatedMaterial = await updateMaterial(parseInt(id), res);
   }
   return Response.json({ updatedMaterial });
+}
+
+export async function DELETE(request: Request) {
+  const ids = await request.json();
+  await deleteMaterials(ids);
+  return Response.json({ ids });
 }

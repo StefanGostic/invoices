@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
 import { materials } from "./schema";
 import * as schema from "./schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, sql as query } from "drizzle-orm";
 
 export const db = drizzle(sql, { schema });
 
@@ -34,4 +34,13 @@ export const updateMaterial = async (id: number, data: any) => {
     .set(data)
     .where(eq(materials.id, id))
     .returning();
+};
+
+export const deleteMaterials = async (ids: number[]) => {
+  const inClause = `(${ids.join(",")})`;
+  await db.execute(
+    query`DELETE FROM ${materials} WHERE ${materials.id} IN ${query.raw(
+      inClause
+    )}`
+  );
 };
