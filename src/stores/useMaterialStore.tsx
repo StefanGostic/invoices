@@ -120,7 +120,6 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
       if (!material) {
         return state;
       }
-
       const newMaterials = state.materials.map((material: Material) =>
         material.id.toString() === id ? { ...newMaterial } : material
       );

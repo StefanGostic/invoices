@@ -195,7 +195,7 @@ const MaterialsTable = ({
         if (oldMaterial[key] === value) return;
 
         const newMaterial = { ...oldMaterial, [key]: value };
-        updateMaterial((rowIndex + 1).toString(), newMaterial);
+        updateMaterial(newMaterial.id, newMaterial);
       },
     },
     debugTable: true,

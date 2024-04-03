@@ -56,6 +56,10 @@ const LeftSide = ({ materials, className }: LeftSideProps) => {
   };
 
   const handleDelete = () => {
+    if (Object.keys(rowSelection).length === 0) {
+      alert("Niste izabrali materijale za brisanje");
+      return;
+    }
     const materialsToDelete = Object.keys(rowSelection).map((id) => {
       return oldMaterials.at(parseInt(id));
     });
