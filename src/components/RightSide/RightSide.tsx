@@ -7,6 +7,7 @@ import styles from "./RightSide.module.scss";
 import { Material } from "@/utils/types";
 import { useMaterialStore } from "@/stores/useMaterialStore";
 import ReactToPrint from "react-to-print";
+import { calculatePriceSubtotal } from "@/utils/functions";
 
 type RightSideProps = {
   className?: string;
@@ -192,10 +193,10 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
             <td>{material?.["invoice_line/price_unit"]}</td>
             <td>{material?.["invoice_line/discount"]}</td>
             <td>
-              {(
-                material?.["invoice_line/quantity"] *
-                material?.["invoice_line/price_unit"] *
-                ((material?.["invoice_line/discount"] || 100) / 100)
+              {calculatePriceSubtotal(
+                material?.["invoice_line/price_unit"],
+                material?.["invoice_line/quantity"],
+                material?.["invoice_line/discount"]
               ).toFixed(2)}
             </td>
           </tr>
@@ -214,12 +215,10 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
   const vpc = chosenMaterials.reduce((acc, material) => {
     return (
       acc +
-      Number(
-        (
-          material?.["invoice_line/quantity"] *
-          material?.["invoice_line/price_unit"] *
-          ((material?.["invoice_line/discount"] || 100) / 100)
-        ).toFixed(2)
+      calculatePriceSubtotal(
+        material?.["invoice_line/price_unit"],
+        material?.["invoice_line/quantity"],
+        material?.["invoice_line/discount"]
       )
     );
   }, 0);
