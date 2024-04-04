@@ -102,11 +102,22 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
       }
 
       material["invoice_line/quantity"] -= quantity;
+      material["invoice_line/price_subtotal"] -=
+        quantity *
+        material["invoice_line/price_unit"] *
+        ((material["invoice_line/discount"] || 100) / 100);
+      material["invoice_line/price_subtotal"] = parseFloat(
+        material["invoice_line/price_subtotal"].toFixed(2)
+      );
       const newMaterials = state.materials.map((material: Material) =>
         material.id.toString() === id ? { ...material } : material
       );
 
-      putMaterialQuantity(material.id, material["invoice_line/quantity"]);
+      putMaterialQuantity(
+        material.id,
+        material["invoice_line/quantity"],
+        material["invoice_line/price_subtotal"]
+      );
       return {
         materials: newMaterials,
       };

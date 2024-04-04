@@ -195,7 +195,7 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
               {(
                 material?.["invoice_line/quantity"] *
                 material?.["invoice_line/price_unit"] *
-                (material?.["invoice_line/discount"] / 100)
+                ((material?.["invoice_line/discount"] || 100) / 100)
               ).toFixed(2)}
             </td>
           </tr>
@@ -218,7 +218,7 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
         (
           material?.["invoice_line/quantity"] *
           material?.["invoice_line/price_unit"] *
-          (material?.["invoice_line/discount"] / 100)
+          ((material?.["invoice_line/discount"] || 100) / 100)
         ).toFixed(2)
       )
     );

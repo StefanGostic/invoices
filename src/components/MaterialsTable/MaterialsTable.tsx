@@ -14,7 +14,6 @@ import { useMaterialStore } from "@/stores/useMaterialStore";
 import classNames from "classnames";
 
 type MaterialsTableProps = {
-  add?: () => void;
   rowSelection?: Record<string, boolean>;
   setRowSelection?: React.Dispatch<
     React.SetStateAction<Record<string, boolean>>
@@ -26,33 +25,6 @@ declare module "@tanstack/react-table" {
     updateData: (rowIndex: number, columnId: string, value: unknown) => void;
   }
 }
-
-const defaultColumn: Partial<ColumnDef<Material>> = {
-  cell: ({ getValue, row: { index }, column: { id }, table }) => {
-    const initialValue = getValue();
-    // We need to keep and update the state of the cell normally
-    const [value, setValue] = React.useState(initialValue);
-
-    // When the input is blurred, we'll call our table meta's updateData function
-    const onBlur = () => {
-      table.options.meta?.updateData(index, id, value);
-    };
-
-    // If the initialValue is changed external, sync it up with our state
-    React.useEffect(() => {
-      setValue(initialValue);
-    }, [initialValue]);
-
-    return (
-      <input
-        value={value as string}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={onBlur}
-        className={styles.inputTable}
-      />
-    );
-  },
-};
 
 function IndeterminateCheckbox({
   indeterminate,
@@ -78,17 +50,11 @@ function IndeterminateCheckbox({
 }
 
 const MaterialsTable = ({
-  add = () => console.log("haha"),
   rowSelection,
   setRowSelection,
 }: MaterialsTableProps) => {
-  const {
-    materials,
-    filteredMaterials,
-    addChosenMaterial,
-    updateMaterial,
-    deleteMaterials,
-  } = useMaterialStore();
+  const { materials, filteredMaterials, addChosenMaterial } =
+    useMaterialStore();
 
   const columns = React.useMemo<ColumnDef<Material>[]>(
     () => [
@@ -182,31 +148,15 @@ const MaterialsTable = ({
   const table = useReactTable({
     columns,
     data: filteredMaterials.length > 0 ? filteredMaterials : materials,
-    defaultColumn,
     state: {
       rowSelection,
     },
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    meta: {
-      updateData: (rowIndex, columnId, value) => {
-        let key: keyof Material = columnId as keyof Material;
-        const oldMaterial = materials[rowIndex];
-        if (oldMaterial[key] === value) return;
-
-        const newMaterial = { ...oldMaterial, [key]: value };
-        updateMaterial(newMaterial.id, newMaterial);
-      },
-    },
-    debugTable: true,
   });
-
-  const rerender = React.useReducer(() => ({}), {})[1];
 
   const addMaterialToInvoice = (id: string, row: any) => {
     addChosenMaterial(id);
-
-    // rerender();
   };
 
   return (
@@ -253,19 +203,20 @@ const MaterialsTable = ({
                   row
                 )
               }
-              className={classNames(styles.rowT)}
+              className={classNames(styles.rowT, {
+                [styles.selected]: materials.find(
+                  (material) =>
+                    material.id.toString() ===
+                      (
+                        row
+                          ?.getVisibleCells()
+                          ?.at(1)
+                          ?.getContext()
+                          ?.getValue() as number
+                      ).toString() || ""
+                )?.selected,
+              })}
             >
-              {materials.find(
-                (material) =>
-                  material.id.toString() ===
-                    (
-                      row
-                        ?.getVisibleCells()
-                        ?.at(1)
-                        ?.getContext()
-                        ?.getValue() as number
-                    ).toString() || ""
-              )?.selected && <div className={styles.selectedAbs}></div>}
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
@@ -280,10 +231,6 @@ const MaterialsTable = ({
           ))}
         </tbody>
       </table>
-
-      {/* <button onClick={() => add()} className="border p-2">
-        Rerender
-      </button> */}
     </div>
   );
 };

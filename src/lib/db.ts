@@ -20,10 +20,17 @@ export const deleteMaterial = async (id: number) => {
   await db.delete(materials).where(eq(materials.id, id));
 };
 
-export const updateMaterialQuantity = async (id: number, quantity: number) => {
+export const updateMaterialQuantity = async (
+  id: number,
+  quantity: number,
+  subtotal: number
+) => {
   return await db
     .update(materials)
-    .set({ "invoice_line/quantity": quantity.toString() })
+    .set({
+      "invoice_line/quantity": quantity.toString(),
+      "invoice_line/price_subtotal": subtotal.toString(),
+    })
     .where(eq(materials.id, id))
     .returning();
 };

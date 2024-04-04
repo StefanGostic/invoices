@@ -23,11 +23,17 @@ export async function POST(request: Request) {
 
 export async function PUT(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
+  const res = await request.json();
   const id = searchParams.get("id");
-  const quantity = searchParams.get("quantity");
+  const quantity = res.quantity;
+  const subtotal = res.subtotal;
   let updatedMaterial = null;
   if (id && quantity) {
-    await updateMaterialQuantity(parseInt(id || ""), parseInt(quantity || ""));
+    await updateMaterialQuantity(
+      parseInt(id || ""),
+      parseFloat(quantity || ""),
+      parseFloat(subtotal || "")
+    );
   }
   return Response.json({ updatedMaterial });
 }
