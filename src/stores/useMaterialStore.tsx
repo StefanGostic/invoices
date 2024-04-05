@@ -16,6 +16,7 @@ type MaterialStore = {
   removeMaterial: (id: string) => void;
   addChosenMaterial: (id: string) => void;
   removeChosenMaterial: (id: string) => void;
+  clearAllChosenMaterials: () => void;
   filterMaterialsByName: (query: string) => void;
   updateMaterialQuantity: (id: string, quantity: number) => void;
   updateMaterial: (id: string, newMaterial: Material) => void;
@@ -153,5 +154,14 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
         materials: newMaterials,
       };
     });
+  },
+  clearAllChosenMaterials: () => {
+    set((state: any) => ({
+      chosenMaterials: [],
+      materials: state.materials.map((material: Material) => ({
+        ...material,
+        selected: false,
+      })),
+    }));
   },
 }));

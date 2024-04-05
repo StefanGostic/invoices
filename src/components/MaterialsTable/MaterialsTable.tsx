@@ -249,9 +249,10 @@ const MaterialsTable = ({
                 [styles.noQuantity]: getRowQuantity(row) === "0",
                 [styles.isModified]:
                   getRowQuantity(row) !== "0" &&
+                  !getRowIdSelected(row, materials) &&
                   getRowIdModified(row, materials),
                 [styles.selected]:
-                  !getRowIdModified(row, materials) &&
+                  getRowQuantity(row) !== "0" &&
                   getRowIdSelected(row, materials),
               })}
             >

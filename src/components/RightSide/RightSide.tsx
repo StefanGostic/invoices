@@ -28,7 +28,8 @@ const RightSide = ({ className }: RightSideProps) => {
     formState: { errors, isValid },
     reset,
   } = useForm<Inputs>();
-  const { updateMaterialQuantity, chosenMaterials } = useMaterialStore();
+  const { updateMaterialQuantity, chosenMaterials, clearAllChosenMaterials } =
+    useMaterialStore();
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     setIsSubmitted(true);
     chosenMaterials.forEach((chosenMaterial) => {
@@ -144,7 +145,13 @@ const RightSide = ({ className }: RightSideProps) => {
           disabled={isSubmitted}
         />
 
-        <button className={styles.submit} onClick={() => reset()}>
+        <button
+          className={styles.submit}
+          onClick={() => {
+            reset();
+            clearAllChosenMaterials();
+          }}
+        >
           Reset forme
         </button>
 
@@ -164,8 +171,13 @@ const RightSide = ({ className }: RightSideProps) => {
 };
 
 const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
-  const { materials, setMaterials, chosenMaterials, setChosenMaterials } =
-    useMaterialStore();
+  const {
+    materials,
+    setMaterials,
+    chosenMaterials,
+    setChosenMaterials,
+    removeChosenMaterial,
+  } = useMaterialStore();
 
   const onChangeQuantity = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -191,12 +203,8 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
   const itemsRef = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
-    // add refs to the array
-    console.log(chosenMaterials);
     itemsRef.current = itemsRef.current.slice(0, chosenMaterials.length);
   }, [chosenMaterials]);
-
-  //itemsRef.current[fieldIntIndex + 1].focus();
 
   const onKeyDown = (e: any, fieldIntIndex: number) => {
     if (e.key === "Enter") {
@@ -216,6 +224,7 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
           <th>Price Unit</th>
           <th>Discount</th>
           <th>Price Subtotal</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -254,6 +263,14 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
                 material?.["invoice_line/quantity"],
                 material?.["invoice_line/discount"]
               ).toFixed(2)}
+            </td>
+            <td>
+              <span
+                className={styles.deleteIcon}
+                onClick={() => removeChosenMaterial(material?.id)}
+              >
+                X
+              </span>
             </td>
           </tr>
         ))}
