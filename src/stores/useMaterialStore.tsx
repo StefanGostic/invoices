@@ -2,7 +2,6 @@ import { Material } from "@/utils/types";
 import { create } from "zustand";
 import {
   patchMaterial,
-  postMaterials,
   putMaterialQuantity,
   deleteMaterials,
 } from "@/app/axios/materialsApi";
@@ -72,6 +71,16 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
     });
   },
   removeChosenMaterial: (id: string) => {
+    set((state: any) => ({
+      materials: state.materials.map((material: Material) =>
+        material.id === id
+          ? {
+              ...material,
+              selected: false,
+            }
+          : material
+      ),
+    }));
     set((state: any) => ({
       chosenMaterials: state.chosenMaterials.filter(
         (material: Material) => material.id !== id

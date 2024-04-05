@@ -96,21 +96,21 @@ a {
 }
 
 table {
-  border: 1px solid lightgray;
+  border: 1px solid black;
 }
 
 tbody {
-  border-bottom: 1px solid lightgray;
-  border: 1px solid lightgray;
+  /* border-bottom: 1px solid lightgray; */
+  border: 1px solid black;
 }
 
 th {
-  border-bottom: 1px solid lightgray;
-  border-right: 1px solid lightgray;
-  border: 1px solid lightgray;
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  border: 1px solid black;
   padding: 2px 4px;
 }
 
 td {
-  border: 1px solid lightgray;
+  border: 1px solid black;
 }
