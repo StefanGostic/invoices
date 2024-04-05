@@ -1,0 +1,271 @@
+{
+  "id": "76af628f-cf5d-47c6-b189-3acd34ba4ff9",
+  "prevId": "0b5156c5-b722-400e-99d7-5e21c966d101",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "invoices": {
+      "name": "invoices",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "number": {
+          "name": "number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "object": {
+          "name": "object",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "workNumber": {
+          "name": "workNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "costOfMaterials": {
+          "name": "costOfMaterials",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "costOfLabor": {
+          "name": "costOfLabor",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "costOfRepromaterials": {
+          "name": "costOfRepromaterials",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "costOfMargin": {
+          "name": "costOfMargin",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "costOfTotal": {
+          "name": "costOfTotal",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "materials": {
+      "name": "materials",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "invoice_line/origin": {
+          "name": "invoice_line/origin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_line/name": {
+          "name": "invoice_line/name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_line/quantity": {
+          "name": "invoice_line/quantity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_line/uos_id/name": {
+          "name": "invoice_line/uos_id/name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_line/price_unit": {
+          "name": "invoice_line/price_unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_line/discount": {
+          "name": "invoice_line/discount",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_line/price_subtotal": {
+          "name": "invoice_line/price_subtotal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "boolean": {
+          "name": "boolean",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {
+        "unique_material": {
+          "name": "unique_material",
+          "columns": [
+            "id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "materials_to_invoices": {
+      "name": "materials_to_invoices",
+      "schema": "",
+      "columns": {
+        "materials_id": {
+          "name": "materials_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoices_id": {
+          "name": "invoices_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "materials_to_invoices_materials_id_materials_id_fk": {
+          "name": "materials_to_invoices_materials_id_materials_id_fk",
+          "tableFrom": "materials_to_invoices",
+          "tableTo": "materials",
+          "columnsFrom": [
+            "materials_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "materials_to_invoices_invoices_id_invoices_id_fk": {
+          "name": "materials_to_invoices_invoices_id_invoices_id_fk",
+          "tableFrom": "materials_to_invoices",
+          "tableTo": "invoices",
+          "columnsFrom": [
+            "invoices_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "materials_to_invoices_materials_id_invoices_id_pk": {
+          "name": "materials_to_invoices_materials_id_invoices_id_pk",
+          "columns": [
+            "materials_id",
+            "invoices_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "unique_idx": {
+          "name": "unique_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

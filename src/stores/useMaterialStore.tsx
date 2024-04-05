@@ -109,6 +109,7 @@ export const useMaterialStore = create<MaterialStore>((set) => ({
       material["invoice_line/price_subtotal"] = parseFloat(
         material["invoice_line/price_subtotal"].toFixed(2)
       );
+      material["isModified"] = true;
       const newMaterials = state.materials.map((material: Material) =>
         material.id.toString() === id ? { ...material } : material
       );

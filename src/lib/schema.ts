@@ -8,6 +8,7 @@ import {
   timestamp,
   primaryKey,
   uniqueIndex,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -42,6 +43,7 @@ export const materials = pgTable(
     "invoice_line/price_subtotal": text(
       "invoice_line/price_subtotal"
     ).notNull(),
+    isModified: boolean("isModified").default(false),
   },
 
   (materials) => {

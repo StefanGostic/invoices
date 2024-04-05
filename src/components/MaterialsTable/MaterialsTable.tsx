@@ -159,6 +159,48 @@ const MaterialsTable = ({
     addChosenMaterial(id);
   };
 
+  function getRowIdSelected(row: any, materials: any[]) {
+    const materialId = row
+      ?.getVisibleCells()
+      ?.at(1)
+      ?.getContext()
+      ?.getValue() as number;
+
+    const material = materials.find(
+      (material) => material.id.toString() === materialId?.toString() || ""
+    );
+
+    return material?.selected;
+  }
+
+  function getRowIdModified(row: any, materials: any[]) {
+    const materialId = row
+      ?.getVisibleCells()
+      ?.at(1)
+      ?.getContext()
+      ?.getValue() as number;
+
+    const material = materials.find(
+      (material) => material.id.toString() === materialId?.toString() || ""
+    );
+
+    return material?.isModified;
+  }
+
+  function getRowQuantity(row: any) {
+    const materialId = row
+      ?.getVisibleCells()
+      ?.at(1)
+      ?.getContext()
+      ?.getValue() as number;
+
+    const material = materials.find(
+      (material) => material.id.toString() === materialId?.toString() || ""
+    );
+
+    return material?.["invoice_line/quantity"].toString();
+  }
+
   return (
     <div className={styles.container}>
       <table
@@ -204,17 +246,13 @@ const MaterialsTable = ({
                 )
               }
               className={classNames(styles.rowT, {
-                [styles.selected]: materials.find(
-                  (material) =>
-                    material.id.toString() ===
-                      (
-                        row
-                          ?.getVisibleCells()
-                          ?.at(1)
-                          ?.getContext()
-                          ?.getValue() as number
-                      ).toString() || ""
-                )?.selected,
+                [styles.noQuantity]: getRowQuantity(row) === "0",
+                [styles.isModified]:
+                  getRowQuantity(row) !== "0" &&
+                  getRowIdModified(row, materials),
+                [styles.selected]:
+                  !getRowIdModified(row, materials) &&
+                  getRowIdSelected(row, materials),
               })}
             >
               {row.getVisibleCells().map((cell) => (

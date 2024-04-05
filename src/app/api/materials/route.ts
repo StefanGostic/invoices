@@ -28,11 +28,12 @@ export async function PUT(request: NextRequest) {
   const quantity = res.quantity;
   const subtotal = res.subtotal;
   let updatedMaterial = null;
-  if (id && quantity) {
-    await updateMaterialQuantity(
+  let stef;
+  if (id) {
+    stef = await updateMaterialQuantity(
       parseInt(id || ""),
-      parseFloat(quantity || ""),
-      parseFloat(subtotal || "")
+      parseFloat(quantity || "") || 0,
+      parseFloat(subtotal || "") || 0
     );
   }
   return Response.json({ updatedMaterial });

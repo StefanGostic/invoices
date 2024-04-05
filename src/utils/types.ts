@@ -8,4 +8,5 @@ export type Material = {
   "invoice_line/discount": number;
   "invoice_line/price_subtotal": number;
   selected?: boolean;
+  isModified?: boolean;
 };

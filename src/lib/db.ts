@@ -30,6 +30,7 @@ export const updateMaterialQuantity = async (
     .set({
       "invoice_line/quantity": quantity.toString(),
       "invoice_line/price_subtotal": subtotal.toString(),
+      isModified: true,
     })
     .where(eq(materials.id, id))
     .returning();

@@ -45,6 +45,7 @@ const LeftSide = ({ materials, className }: LeftSideProps) => {
                 "invoice_line/price_subtotal":
                   d["invoice_line/price_subtotal"] || "",
                 "invoice_line/uos_id/name": d["invoice_line/uos_id/name"] || "",
+                isModified: false,
               };
             }
           );

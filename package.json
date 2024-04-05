@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate:schema": "npx drizzle-kit generate:pg"
   },
   "dependencies": {
     "@next/env": "^14.1.4",
