@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import styles from "./RightSide.module.scss";
 import { Material } from "@/utils/types";
@@ -41,6 +41,10 @@ const RightSide = ({ className }: RightSideProps) => {
   const refForPrinting = React.useRef<HTMLDivElement>(null);
   const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false);
 
+  const checkKeyDown = (e: any) => {
+    if (e.key === "Enter") e.preventDefault();
+  };
+
   useEffect(() => {
     if (isSubmitted && !isValid) {
       setIsSubmitted(false);
@@ -48,7 +52,10 @@ const RightSide = ({ className }: RightSideProps) => {
   }, [isValid, isSubmitted]);
 
   return (
-    <div className={classNames(styles.container, className)}>
+    <div
+      className={classNames(styles.container, className)}
+      onKeyDown={(e) => checkKeyDown(e)}
+    >
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <div className={styles.basicInfo} ref={refForPrinting}>
           <div className={styles.inputWrapper}>
@@ -56,7 +63,13 @@ const RightSide = ({ className }: RightSideProps) => {
             <input
               placeholder="Naziv"
               {...register("naziv", { required: true })}
-              style={{ marginBottom: "10px", width: "25%" }}
+              style={{
+                marginBottom: "10px",
+                width: "25%",
+                height: "45px",
+                padding: "0 10px",
+                fontSize: "16px",
+              }}
             />
             {errors.naziv && (
               <span className={styles.error}>Ovo polje je obavezno</span>
@@ -68,7 +81,13 @@ const RightSide = ({ className }: RightSideProps) => {
               type="number"
               placeholder="Broj Komada"
               {...register("brojKomada", { required: true })}
-              style={{ marginBottom: "10px", width: "25%" }}
+              style={{
+                marginBottom: "10px",
+                width: "25%",
+                height: "45px",
+                padding: "0 10px",
+                fontSize: "16px",
+              }}
             />
             {errors.brojKomada && (
               <span className={styles.error}>Ovo polje je obavezno</span>
@@ -79,7 +98,13 @@ const RightSide = ({ className }: RightSideProps) => {
             <input
               placeholder="Objekat"
               {...register("objekat", { required: true })}
-              style={{ marginBottom: "10px", width: "25%" }}
+              style={{
+                marginBottom: "10px",
+                width: "25%",
+                height: "45px",
+                padding: "0 10px",
+                fontSize: "16px",
+              }}
             />
             {errors.objekat && (
               <span className={styles.error}>Ovo polje je obavezno</span>
@@ -91,7 +116,13 @@ const RightSide = ({ className }: RightSideProps) => {
               type="number"
               placeholder="Radni Broj"
               {...register("radniBroj", { required: true })}
-              style={{ marginBottom: "10px", width: "25%" }}
+              style={{
+                marginBottom: "10px",
+                width: "25%",
+                height: "45px",
+                padding: "0 10px",
+                fontSize: "16px",
+              }}
             />
             {errors.radniBroj && (
               <span className={styles.error}>Ovo polje je obavezno</span>
@@ -157,6 +188,22 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
     }
   };
 
+  const itemsRef = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    // add refs to the array
+    console.log(chosenMaterials);
+    itemsRef.current = itemsRef.current.slice(0, chosenMaterials.length);
+  }, [chosenMaterials]);
+
+  //itemsRef.current[fieldIntIndex + 1].focus();
+
+  const onKeyDown = (e: any, fieldIntIndex: number) => {
+    if (e.key === "Enter") {
+      itemsRef?.current?.[fieldIntIndex + 1]?.focus();
+    }
+  };
+
   return (
     <table className={styles.table}>
       <thead>
@@ -182,10 +229,19 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
                 material?.["invoice_line/quantity"]
               ) : (
                 <input
+                  ref={(el) => (itemsRef.current[index] = el)}
                   type="number"
+                  step="any"
                   value={material?.["invoice_line/quantity"]}
                   onChange={(e) => onChangeQuantity(e, material.id)}
-                  style={{ width: "100%" }}
+                  style={{
+                    width: "100%",
+                    height: "45px",
+                    padding: "0 10px",
+                    fontSize: "16px",
+                  }}
+                  autoFocus
+                  onKeyDown={(e) => onKeyDown(e, index)}
                 />
               )}
             </td>
@@ -251,7 +307,12 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
                 value={workerCost || ""}
                 placeholder="0"
                 onChange={(e) => setWorkerCost(Number(e.target.value))}
-                style={{ width: "100px" }}
+                style={{
+                  width: "100px",
+                  height: "45px",
+                  padding: "0 10px",
+                  fontSize: "16px",
+                }}
               />
             )}
           </td>
@@ -268,7 +329,12 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
                 value={repromaterialCost || ""}
                 placeholder="0"
                 onChange={(e) => setRepromaterialCost(Number(e.target.value))}
-                style={{ width: "100px" }}
+                style={{
+                  width: "100px",
+                  height: "45px",
+                  padding: "0 10px",
+                  fontSize: "16px",
+                }}
               />
             )}
           </td>
@@ -285,7 +351,12 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
                 value={margin || ""}
                 placeholder="0"
                 onChange={(e) => setMargin(Number(e.target.value))}
-                style={{ width: "100px" }}
+                style={{
+                  width: "100px",
+                  height: "45px",
+                  padding: "0 10px",
+                  fontSize: "16px",
+                }}
               />
             )}
           </td>
