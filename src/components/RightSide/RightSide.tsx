@@ -216,7 +216,7 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
     <table className={styles.table}>
       <thead>
         <tr>
-          <th>id</th>
+          {!isSubmitted && <th>id</th>}
           <th>Origin</th>
           <th>Name</th>
           <th>Quantity</th>
@@ -224,13 +224,13 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
           <th>Price Unit</th>
           <th>Discount</th>
           <th>Price Subtotal</th>
-          <th></th>
+          {!isSubmitted && <th></th>}
         </tr>
       </thead>
       <tbody>
         {chosenMaterials.map((material, index) => (
           <tr key={index}>
-            <td>{material?.id ?? ""}</td>
+            {!isSubmitted && <td>{material?.id ?? ""}</td>}
             <td>{material?.["invoice_line/origin"]}</td>
             <td>{material?.["invoice_line/name"]}</td>
             <td>
@@ -264,14 +264,16 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
                 material?.["invoice_line/discount"]
               ).toFixed(2)}
             </td>
-            <td>
-              <span
-                className={styles.deleteIcon}
-                onClick={() => removeChosenMaterial(material?.id)}
-              >
-                X
-              </span>
-            </td>
+            {!isSubmitted && (
+              <td>
+                <span
+                  className={styles.deleteIcon}
+                  onClick={() => removeChosenMaterial(material?.id)}
+                >
+                  X
+                </span>
+              </td>
+            )}
           </tr>
         ))}
       </tbody>
