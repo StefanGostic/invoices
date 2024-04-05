@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect } from "react";
 import styles from "./LeftSide.module.scss";
 import MaterialsTable from "../MaterialsTable/MaterialsTable";
