@@ -162,12 +162,12 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
         <tr>
           <th>id</th>
           <th>Origin</th>
-          <th>Name</th>
-          <th>Quantity</th>
-          <th>Uos Id Name</th>
-          <th>Price Unit</th>
-          <th>Discount</th>
-          <th>Price Subtotal</th>
+          <th>Naziv</th>
+          <th>Količina</th>
+          <th>jm</th>
+          <th>cijena/jm</th>
+          <th>Popust</th>
+          <th>Cijena</th>
         </tr>
       </thead>
       <tbody>
