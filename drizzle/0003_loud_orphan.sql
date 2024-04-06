@@ -1,0 +1,1 @@
+ALTER TABLE "materials" ALTER COLUMN "boolean" DROP NOT NULL;

@@ -14,7 +14,6 @@ import { useMaterialStore } from "@/stores/useMaterialStore";
 import classNames from "classnames";
 
 type MaterialsTableProps = {
-  add?: () => void;
   rowSelection?: Record<string, boolean>;
   setRowSelection?: React.Dispatch<
     React.SetStateAction<Record<string, boolean>>
@@ -26,33 +25,6 @@ declare module "@tanstack/react-table" {
     updateData: (rowIndex: number, columnId: string, value: unknown) => void;
   }
 }
-
-const defaultColumn: Partial<ColumnDef<Material>> = {
-  cell: ({ getValue, row: { index }, column: { id }, table }) => {
-    const initialValue = getValue();
-    // We need to keep and update the state of the cell normally
-    const [value, setValue] = React.useState(initialValue);
-
-    // When the input is blurred, we'll call our table meta's updateData function
-    const onBlur = () => {
-      table.options.meta?.updateData(index, id, value);
-    };
-
-    // If the initialValue is changed external, sync it up with our state
-    React.useEffect(() => {
-      setValue(initialValue);
-    }, [initialValue]);
-
-    return (
-      <input
-        value={value as string}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={onBlur}
-        className={styles.inputTable}
-      />
-    );
-  },
-};
 
 function IndeterminateCheckbox({
   indeterminate,
@@ -78,17 +50,11 @@ function IndeterminateCheckbox({
 }
 
 const MaterialsTable = ({
-  add = () => console.log("haha"),
   rowSelection,
   setRowSelection,
 }: MaterialsTableProps) => {
-  const {
-    materials,
-    filteredMaterials,
-    addChosenMaterial,
-    updateMaterial,
-    deleteMaterials,
-  } = useMaterialStore();
+  const { materials, filteredMaterials, addChosenMaterial } =
+    useMaterialStore();
 
   const columns = React.useMemo<ColumnDef<Material>[]>(
     () => [
@@ -125,14 +91,14 @@ const MaterialsTable = ({
           {
             accessorFn: (row) => row.id,
             id: "id",
-            header: () => <span># Nm</span>,
+            header: () => <span>#</span>,
             footer: (props) => props.column.id,
             size: 15,
           },
           {
             accessorFn: (row) => row["invoice_line/origin"],
             id: "invoice_line/origin",
-            header: () => <span>invoice_line/origin</span>,
+            header: () => <span>origin</span>,
             footer: (props) => props.column.id,
           },
           {
@@ -140,38 +106,43 @@ const MaterialsTable = ({
             id: "invoice_line/name",
             header: () => <span>invoice_line/name</span>,
             footer: (props) => props.column.id,
-            size: 700,
-            minSize: 500,
+            size: 560,
+            // minSize: 500,
           },
           {
             accessorFn: (row) => row["invoice_line/quantity"],
             id: "invoice_line/quantity",
-            header: () => <span>invoice_line/quantity</span>,
+            header: () => <span>quantity</span>,
             footer: (props) => props.column.id,
+            size: 30,
           },
           {
             accessorFn: (row) => row["invoice_line/uos_id/name"],
             id: "invoice_line/uos_id/name",
-            header: () => <span>invoice_line/uos_id/name</span>,
+            header: () => <span>uos_id</span>,
             footer: (props) => props.column.id,
+            size: 20,
           },
           {
             accessorFn: (row) => row["invoice_line/price_unit"],
             id: "invoice_line/price_unit",
-            header: () => <span>invoice_line/price_unit</span>,
+            header: () => <span>price_unit</span>,
             footer: (props) => props.column.id,
+            size: 20,
           },
           {
             accessorFn: (row) => row["invoice_line/discount"],
             id: "invoice_line/discount",
-            header: () => <span>invoice_line/discount</span>,
+            header: () => <span>discount</span>,
             footer: (props) => props.column.id,
+            size: 20,
           },
           {
             accessorFn: (row) => row["invoice_line/price_subtotal"],
             id: "invoice_line/price_subtotal",
-            header: () => <span>invoice_line/price_subtotal</span>,
+            header: () => <span>subtotal</span>,
             footer: (props) => props.column.id,
+            size: 20,
           },
         ],
       },
@@ -182,32 +153,58 @@ const MaterialsTable = ({
   const table = useReactTable({
     columns,
     data: filteredMaterials.length > 0 ? filteredMaterials : materials,
-    defaultColumn,
     state: {
       rowSelection,
     },
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    meta: {
-      updateData: (rowIndex, columnId, value) => {
-        let key: keyof Material = columnId as keyof Material;
-        const oldMaterial = materials[rowIndex];
-        if (oldMaterial[key] === value) return;
-
-        const newMaterial = { ...oldMaterial, [key]: value };
-        updateMaterial((rowIndex + 1).toString(), newMaterial);
-      },
-    },
-    debugTable: true,
   });
-
-  const rerender = React.useReducer(() => ({}), {})[1];
 
   const addMaterialToInvoice = (id: string, row: any) => {
     addChosenMaterial(id);
-
-    // rerender();
   };
+
+  function getRowIdSelected(row: any, materials: any[]) {
+    const materialId = row
+      ?.getVisibleCells()
+      ?.at(1)
+      ?.getContext()
+      ?.getValue() as number;
+
+    const material = materials.find(
+      (material) => material.id.toString() === materialId?.toString() || ""
+    );
+
+    return material?.selected;
+  }
+
+  function getRowIdModified(row: any, materials: any[]) {
+    const materialId = row
+      ?.getVisibleCells()
+      ?.at(1)
+      ?.getContext()
+      ?.getValue() as number;
+
+    const material = materials.find(
+      (material) => material.id.toString() === materialId?.toString() || ""
+    );
+
+    return material?.isModified;
+  }
+
+  function getRowQuantity(row: any) {
+    const materialId = row
+      ?.getVisibleCells()
+      ?.at(1)
+      ?.getContext()
+      ?.getValue() as number;
+
+    const material = materials.find(
+      (material) => material.id.toString() === materialId?.toString() || ""
+    );
+
+    return material?.["invoice_line/quantity"].toString();
+  }
 
   return (
     <div className={styles.container}>
@@ -253,19 +250,17 @@ const MaterialsTable = ({
                   row
                 )
               }
-              className={classNames(styles.rowT)}
+              className={classNames(styles.rowT, {
+                [styles.noQuantity]: getRowQuantity(row) === "0",
+                [styles.isModified]:
+                  getRowQuantity(row) !== "0" &&
+                  !getRowIdSelected(row, materials) &&
+                  getRowIdModified(row, materials),
+                [styles.selected]:
+                  getRowQuantity(row) !== "0" &&
+                  getRowIdSelected(row, materials),
+              })}
             >
-              {materials.find(
-                (material) =>
-                  material.id.toString() ===
-                    (
-                      row
-                        ?.getVisibleCells()
-                        ?.at(1)
-                        ?.getContext()
-                        ?.getValue() as number
-                    ).toString() || ""
-              )?.selected && <div className={styles.selectedAbs}></div>}
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
@@ -280,10 +275,6 @@ const MaterialsTable = ({
           ))}
         </tbody>
       </table>
-
-      {/* <button onClick={() => add()} className="border p-2">
-        Rerender
-      </button> */}
     </div>
   );
 };
