@@ -169,10 +169,7 @@ const RightSide = ({ className }: RightSideProps) => {
 
           <div className={styles.horizontalLine}></div>
           <div className={styles.tableWrapper}>
-            <MatTable
-              isSubmitted={isSubmitted}
-              brojKomada={parseInt(brojKomada)} // Convert the number to a string
-            />
+            <MatTable isSubmitted={isSubmitted} />
           </div>
           <div className={styles.horizontalLine}></div>
           <div className={styles.tableWrapper}>
@@ -214,13 +211,7 @@ const RightSide = ({ className }: RightSideProps) => {
   );
 };
 
-const MatTable = ({
-  isSubmitted,
-  brojKomada,
-}: {
-  isSubmitted: boolean;
-  brojKomada: number;
-}) => {
+const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
   const {
     materials,
     chosenMaterials,
@@ -308,7 +299,7 @@ const MatTable = ({
             <td>{material?.["invoice_line/discount"]}</td>
             <td>
               {calculatePriceSubtotal(
-                material?.["invoice_line/price_unit"] / (brojKomada || 1),
+                material?.["invoice_line/price_unit"],
                 material?.["invoice_line/quantity"],
                 material?.["invoice_line/discount"]
               ).toFixed(2)}
