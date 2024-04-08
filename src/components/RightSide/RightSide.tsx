@@ -18,6 +18,7 @@ type Inputs = {
   brojKomada: number;
   objekat: string;
   radniBroj: number;
+  faktura: string;
   materials?: Material[];
 };
 
@@ -27,6 +28,7 @@ const RightSide = ({ className }: RightSideProps) => {
     handleSubmit,
     formState: { errors, isValid },
     reset,
+    watch,
   } = useForm<Inputs>();
   const { updateMaterialQuantity, chosenMaterials, clearAllChosenMaterials } =
     useMaterialStore();
@@ -41,6 +43,7 @@ const RightSide = ({ className }: RightSideProps) => {
   };
   const refForPrinting = React.useRef<HTMLDivElement>(null);
   const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false);
+  const brojKomada: any = watch("brojKomada");
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -79,6 +82,7 @@ const RightSide = ({ className }: RightSideProps) => {
               <div className={styles.label}>Redni Broj:</div>
               <input
                 type="number"
+                min={0}
                 placeholder="Redni Broj"
                 {...register("radniBroj", { required: true })}
                 style={{
@@ -113,6 +117,7 @@ const RightSide = ({ className }: RightSideProps) => {
             <div className={styles.label}>Broj Komada:</div>
             <input
               type="number"
+              min={0}
               placeholder="Broj Komada"
               {...register("brojKomada", { required: true })}
               style={{
@@ -144,14 +149,37 @@ const RightSide = ({ className }: RightSideProps) => {
               <span className={styles.error}>Ovo polje je obavezno</span>
             )}
           </div>
+          <div className={styles.inputWrapper}>
+            <div className={styles.label}>Faktura:</div>
+            <input
+              placeholder="Faktura"
+              {...register("faktura", { required: true })}
+              style={{
+                marginBottom: "10px",
+                width: "25%",
+                height: "45px",
+                padding: "0 10px",
+                fontSize: "16px",
+              }}
+            />
+            {errors.naziv && (
+              <span className={styles.error}>Ovo polje je obavezno</span>
+            )}
+          </div>
 
           <div className={styles.horizontalLine}></div>
           <div className={styles.tableWrapper}>
-            <MatTable isSubmitted={isSubmitted} />
+            <MatTable
+              isSubmitted={isSubmitted}
+              brojKomada={parseInt(brojKomada)} // Convert the number to a string
+            />
           </div>
           <div className={styles.horizontalLine}></div>
           <div className={styles.tableWrapper}>
-            <OtherTable isSubmitted={isSubmitted} />
+            <OtherTable
+              isSubmitted={isSubmitted}
+              brojKomada={parseInt(brojKomada)}
+            />
           </div>
         </div>
         <input
@@ -186,7 +214,13 @@ const RightSide = ({ className }: RightSideProps) => {
   );
 };
 
-const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
+const MatTable = ({
+  isSubmitted,
+  brojKomada,
+}: {
+  isSubmitted: boolean;
+  brojKomada: number;
+}) => {
   const {
     materials,
     chosenMaterials,
@@ -232,7 +266,7 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
       <thead>
         <tr>
           {!isSubmitted && <th>id</th>}
-          <th>Origin</th>
+          <th>Racun</th>
           <th>Naziv</th>
           <th>Količina</th>
           <th>jm</th>
@@ -254,6 +288,7 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
                 <input
                   ref={(el) => (itemsRef.current[index] = el)}
                   type="number"
+                  min={0}
                   step="any"
                   value={material?.["invoice_line/quantity"]}
                   onChange={(e) => onChangeQuantity(e, material.id)}
@@ -273,7 +308,7 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
             <td>{material?.["invoice_line/discount"]}</td>
             <td>
               {calculatePriceSubtotal(
-                material?.["invoice_line/price_unit"],
+                material?.["invoice_line/price_unit"] / (brojKomada || 1),
                 material?.["invoice_line/quantity"],
                 material?.["invoice_line/discount"]
               ).toFixed(2)}
@@ -295,7 +330,13 @@ const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
   );
 };
 
-const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
+const OtherTable = ({
+  isSubmitted,
+  brojKomada,
+}: {
+  isSubmitted: boolean;
+  brojKomada: number;
+}) => {
   const { chosenMaterials } = useMaterialStore();
   const [workerCost, setWorkerCost] = React.useState<number>(0);
   const [repromaterialCost, setRepromaterialCost] = React.useState<number>(0);
@@ -305,7 +346,7 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
     return (
       acc +
       calculatePriceSubtotal(
-        material?.["invoice_line/price_unit"],
+        material?.["invoice_line/price_unit"] / (brojKomada || 1),
         material?.["invoice_line/quantity"],
         material?.["invoice_line/discount"]
       )
@@ -344,6 +385,7 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
             ) : (
               <input
                 type="number"
+                min={0}
                 step={0.1}
                 value={workerCost || ""}
                 placeholder="0"
@@ -366,6 +408,7 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
             ) : (
               <input
                 type="number"
+                min={0}
                 step={0.1}
                 value={repromaterialCost || ""}
                 placeholder="0"
@@ -388,6 +431,7 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
             ) : (
               <input
                 type="number"
+                min={0}
                 step={0.1}
                 value={margin || ""}
                 placeholder="0"
