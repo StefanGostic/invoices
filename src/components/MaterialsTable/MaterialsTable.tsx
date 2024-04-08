@@ -110,7 +110,12 @@ const MaterialsTable = ({
             // minSize: 500,
           },
           {
-            accessorFn: (row) => row["invoice_line/quantity"],
+            accessorFn: (row) => {
+              const quantity = row["invoice_line/quantity"];
+              return typeof quantity === "number"
+                ? quantity.toFixed(2)
+                : parseFloat(quantity).toFixed(2);
+            },
             id: "invoice_line/quantity",
             header: () => <span>quantity</span>,
             footer: (props) => props.column.id,

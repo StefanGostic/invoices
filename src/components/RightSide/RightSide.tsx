@@ -42,6 +42,21 @@ const RightSide = ({ className }: RightSideProps) => {
   const refForPrinting = React.useRef<HTMLDivElement>(null);
   const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false);
 
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === ",") {
+        event.preventDefault();
+        document.execCommand("insertText", false, ".");
+      }
+    };
+
+    window.addEventListener("keypress", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keypress", handleKeyPress);
+    };
+  }, []);
+
   const checkKeyDown = (e: any) => {
     if (e.key === "Enter") e.preventDefault();
   };
@@ -60,9 +75,27 @@ const RightSide = ({ className }: RightSideProps) => {
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <div className={styles.basicInfo} ref={refForPrinting}>
           <div className={styles.inputWrapper}>
-            <div className={styles.label}>Naziv:</div>
+            <div>
+              <div className={styles.label}>Redni Broj:</div>
+              <input
+                type="number"
+                placeholder="Redni Broj"
+                {...register("radniBroj", { required: true })}
+                style={{
+                  marginBottom: "10px",
+                  width: "25%",
+                  height: "45px",
+                  padding: "0 10px",
+                  fontSize: "16px",
+                }}
+              />
+              {errors.radniBroj && (
+                <span className={styles.error}>Ovo polje je obavezno</span>
+              )}
+            </div>
+            <div className={styles.label}>Naziv Usluge:</div>
             <input
-              placeholder="Naziv"
+              placeholder="Naziv Usluge"
               {...register("naziv", { required: true })}
               style={{
                 marginBottom: "10px",
@@ -111,24 +144,7 @@ const RightSide = ({ className }: RightSideProps) => {
               <span className={styles.error}>Ovo polje je obavezno</span>
             )}
           </div>
-          <div>
-            <div className={styles.label}>Radni Broj:</div>
-            <input
-              type="number"
-              placeholder="Radni Broj"
-              {...register("radniBroj", { required: true })}
-              style={{
-                marginBottom: "10px",
-                width: "25%",
-                height: "45px",
-                padding: "0 10px",
-                fontSize: "16px",
-              }}
-            />
-            {errors.radniBroj && (
-              <span className={styles.error}>Ovo polje je obavezno</span>
-            )}
-          </div>
+
           <div className={styles.horizontalLine}></div>
           <div className={styles.tableWrapper}>
             <MatTable isSubmitted={isSubmitted} />
@@ -173,7 +189,6 @@ const RightSide = ({ className }: RightSideProps) => {
 const MatTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
   const {
     materials,
-    setMaterials,
     chosenMaterials,
     setChosenMaterials,
     removeChosenMaterial,
@@ -296,6 +311,14 @@ const OtherTable = ({ isSubmitted }: { isSubmitted: boolean }) => {
       )
     );
   }, 0);
+
+  useEffect(() => {
+    if (chosenMaterials.length === 0) {
+      setWorkerCost(0);
+      setRepromaterialCost(0);
+      setMargin(0);
+    }
+  }, [chosenMaterials]);
 
   return (
     <table className={styles.table} style={{ marginTop: "16px" }}>
